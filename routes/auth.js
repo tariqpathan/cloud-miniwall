@@ -11,6 +11,7 @@ const {registerValidation, loginValidation} = require('../validations/validation
 router.post('/register', async(req, res) => {
     
     // checking for valid user input and username is unique
+    console.log(req.body)
     const {error} = registerValidation(req.body)
     if (error) {return res.status(400).send({message:error['details'][0]['message']})}
 
