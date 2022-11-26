@@ -1,7 +1,7 @@
 const express = require('express')
 const Post = require('../models/Post')
 const router = express.Router()
-const verify = require('../verifyToken')
+const verifyToken = require('../verifyToken')
 
 // add the validation here or in the auth bit...
 
@@ -20,9 +20,11 @@ router.post('/comment', async(req, res)=> {
 
 router.post('/like', async(req, res)=> {
     // get the current number of likes and add one to it
+    // add user-id to liked post array
+    // add post-id to users-liked array
 })
 
-router.get('/', verify, async(req, res)=> {
+router.get('/', verifyToken, async(req, res)=> {
     try{
         const posts = await Post.find()
         res.send(posts)

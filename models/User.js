@@ -21,6 +21,12 @@ const userSchema = mongoose.Schema({
     date:{
         type:Date,
         default:Date.now()
+    },
+    liked_posts:{
+        type:[{
+            type:mongoose.Schema.Types.ObjectId,
+            ref:"Post"
+        }]
     }
 })
 

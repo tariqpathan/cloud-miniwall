@@ -10,7 +10,7 @@ npm install dotenv
 * body-parser used for json data
 npm install body-parser bcryptjs
 
-* joi for validation
+* joi for validating user inputs
 npm install joi
 
 * bcryptjs for hashing password

@@ -23,8 +23,9 @@ const postSchema = mongoose.Schema({
         require:true,
     },
     post_likes:{
-        type:Number,
-        default:0,
+        type:[{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User"}]
     },
     // consider removing this and populating when queried
     post_comments:{

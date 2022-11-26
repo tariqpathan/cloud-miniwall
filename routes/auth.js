@@ -51,7 +51,7 @@ router.post('/login', async(req, res)=>{
     const user = await User.findOne({
         $or: [{
             email:req.body.email},
-            {username: req.body.email},
+            {username: req.body.username},
         ]})
     if (!user) {return res.status(400).send({message: "User does not exist"})}
 

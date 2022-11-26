@@ -1,3 +1,4 @@
+const Joi = require('joi')
 const joi = require('joi')
 
 const registerValidation = (data) => {
@@ -12,9 +13,12 @@ const registerValidation = (data) => {
 
 const loginValidation = (data) => {
     const schemaValidation = joi.object({
-        email:joi.string().required().min(6).max(256).email(),
         password:joi.string().required().min(6).max(1024)
-    })
+    }).keys({
+        // allows users to login via email or username
+        username: Joi.string().min(5),
+        email: Joi.string().min(6)
+    }).or('username', 'email');
     return schemaValidation.validate(data)
 }
 
