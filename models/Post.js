@@ -29,8 +29,9 @@ const postSchema = mongoose.Schema({
     },
     // consider removing this and populating when queried
     post_comments:{
-        type:mongoose.Schema.Types.ObjectId, ref:"Comment",
-        require:false,
+        type:[{
+            type:mongoose.Schema.Types.ObjectId,
+            ref:"Comment"}],
         max:128,
     }
     

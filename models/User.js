@@ -22,6 +22,7 @@ const userSchema = mongoose.Schema({
         type:Date,
         default:Date.now()
     },
+    // consider removing this
     liked_posts:{
         type:[{
             type:mongoose.Schema.Types.ObjectId,

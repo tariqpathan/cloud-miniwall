@@ -8,10 +8,13 @@ require('dotenv/config')
 const authRoute = require('./routes/auth')
 const postsRoute = require('./routes/posts')
 const usersRoute = require('./routes/users')
+const commentsRoute = require('./routes/comments')
 
 app.use(bodyParser.json())
 app.use('/api/user', authRoute)
 app.use('/api/post', postsRoute)
+app.use('/api/comment', postsRoute)
+
 app.use('/users', usersRoute) // use for debugging
 
 mongoose.connect(process.env.DB_CONNECTOR, ()=> {

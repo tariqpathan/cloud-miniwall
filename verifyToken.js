@@ -10,7 +10,7 @@ function auth(req, res, next){
         req.user=verified
         next()
     }catch(err){
-        return res.status(401).send({"message": err})
+        return res.status(401).send({"message":"Must be logged in"})
     }
 }
 
