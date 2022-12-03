@@ -1,11 +1,12 @@
 const mongoose = require('mongoose')
 
 const commentSchema = mongoose.Schema({
-    comment_parent:{
-        type:mongoose.Schema.Types.ObjectId, 
-        ref:"Post",
-        require:true,
-    },
+    // removing since this will be nested in the post
+    // comment_parent:{
+    //     type:mongoose.Schema.Types.ObjectId, 
+    //     ref:"Post",
+    //     require:true,
+    // },
     comment_description:{
         type:String,
         require:true,
@@ -20,14 +21,7 @@ const commentSchema = mongoose.Schema({
         type:mongoose.Schema.Types.ObjectId, 
         ref: "User",
         require:true,
-
-    },
-    comment_likes:{
-        type:[{
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "User"}]
     }
-    
 })
 
 module.exports = mongoose.model('Comment', commentSchema)

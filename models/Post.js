@@ -1,6 +1,9 @@
 const mongoose = require('mongoose')
+const commentSchema = require('./Comment')
+const userSchema = require('./User')
 
 const postSchema = mongoose.Schema({
+    
     post_title:{
         type:String,
         require:true,
@@ -23,18 +26,11 @@ const postSchema = mongoose.Schema({
         require:true,
     },
     post_likes:{
-        type:[{
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "User"}]
+        type: [userSchema.schema]
     },
-    // consider removing this and populating when queried
     post_comments:{
-        type:[{
-            type:mongoose.Schema.Types.ObjectId,
-            ref:"Comment"}],
-        max:128,
+        type: [commentSchema.schema]
     }
-    
 })
 
 module.exports = mongoose.model('Post', postSchema)

@@ -5,9 +5,8 @@ const Comment = require('../models/Comment')
 const router = express.Router()
 const verifyToken = require('../verifyToken')
 
-// add the validation here or in the auth bit...
 
-const {postValidation, commentValidation} = require('../validations/validation')
+const {postValidation} = require('../validations/validation')
 
 router.post('/newpost', verifyToken, async(req, res)=>{
     console.log('in the new post route')
@@ -18,50 +17,38 @@ router.post('/newpost', verifyToken, async(req, res)=>{
     if (!author) {return res.status(400).send({message:"user not found"})}
     console.log(author)
     const postData = new Post({
-        post_title:req.body.title,
-        post_description:req.body.description,
+        post_title:req.body.post_title,
+        post_description:req.body.post_description,
         post_author:author
     })
     try {
         const savePost = await postData.save()
-        res.redirect('/')
+        res.send({message:"success"})
     }catch(err){
         res.send({message:err})
-    }
-})
-
-/* to be moved to comments.js
-router.post('/:postId/comment', verifyToken, async(req, res)=> {
-    // i need to capture the post id for the comment
-    // make sure this is an atomic operation
-    const {error} = commentValidation(req.body)
-    if (error) {return res.status(400).send({message:error['details'][0]['message']})}
-    try{
-        const getPostbyId = await Post.findById(req.params.postId)
-
-    }catch(err){
-        res.send({message:err})
-    }
-})
-*/
-
-router.patch('/like/:postId', verifyToken, async(req, res)=> {
-    // get the current number of likes and add one to it
-    // add user-id to liked post array
-    // add post-id to users-liked array
-    try{
-        const posts = await Post.find()
-        res.send(["Congratulations!", posts])
-    }catch(err){
-        res.status(400).send({message:err})
     }
 })
 
 router.get('/', verifyToken, async(req, res)=> {
     // get by the most likes first and then chronological
+    // filter output to provide title, description, timestamp, author, no_likes
+
     try{
-        const posts = await Post.find()
-        res.send(["Congratulations!", posts])
+        
+        const postsTwo = await Post.find({})
+
+        const posts = await Post.find({}, {
+            post_title: 1,
+            post_description: 1,
+            post_timestamp: 1,
+            post_author: 1
+            // post_likes: post_likes.length
+            // post_comments: {
+            //     comment_description: 1
+            // }
+        }).populate('post_comments', 'post_author').
+        exec()
+        res.send(["Congratulations!", postsTwo])
     }catch(err){
         res.status(400).send({message:err})
     }
