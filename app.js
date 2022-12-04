@@ -9,13 +9,13 @@ const authRoute = require('./routes/auth')
 const postsRoute = require('./routes/posts')
 const usersRoute = require('./routes/users')
 const commentsRoute = require('./routes/comments')
-const likesRoute = require('./routes/likes')
+const reactsRoute = require('./routes/reacts')
 
 app.use(bodyParser.json())
 app.use('/api/user', authRoute)
 app.use('/api/post', postsRoute)
 app.use('/api/comment', commentsRoute)
-app.use('/api/like', likesRoute)
+app.use('/api/react', reactsRoute)
 
 app.use('/users', usersRoute) // use for debugging
 

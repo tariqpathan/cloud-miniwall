@@ -5,7 +5,7 @@ const router = express.Router()
 const verifyToken = require('../verifyToken')
 
 
-router.put('/:postId', verifyToken, async(req, res)=>{
+router.put('/like/:postId', verifyToken, async(req, res)=>{
     
     const postLiker = await User.findById(req.user._id)
     if (!postLiker) {return res.status(400).send({message:"user not found"})}
@@ -31,6 +31,28 @@ router.put('/:postId', verifyToken, async(req, res)=>{
     }
 })
 
+router.put('/unlike/:postId', verifyToken, async(req, res)=>{
+    
+    const postLiker = await User.findById(req.user._id)
+    if (!postLiker) {return res.status(400).send({message:"user not found"})}
+    
+    const post = await Post.findById(req.params.postId)
+    if (!post) {return res.status(400).send({message:"post not found"})}
+
+    try {
+        await post.updateOne({
+            $pull: {post_likes:postLiker}
+        })
+        const updatedPost = await Post.findById(req.params.postId)
+        res.send({
+            likes: updatedPost.post_likes.length
+        })
+    }catch(err){
+        res.send({error:err})
+    }
+})
+
+// consider removing this
 router.put('/toggle/:postId', verifyToken, async(req, res)=>{
     
     const postLiker = await User.findById(req.user._id)
@@ -39,7 +61,7 @@ router.put('/toggle/:postId', verifyToken, async(req, res)=>{
     const post = await Post.findById(req.params.postId)
     if (!post) {return res.status(400).send({message:"post not found"})}
 
-    if (postLiker.equals(post.post_author2)) { //change this back!
+    if (postLiker.equals(post.post_author)) { 
         return res.status(403).send({message:"an author cannot like their posts"})
     }
     
