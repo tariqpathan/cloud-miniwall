@@ -33,8 +33,8 @@ const postSchema = mongoose.Schema({
     }
 })
 
-postSchema.virtual('numLikes').get( function () {
-    return this.post_likes.length})
+// postSchema.virtual('numLikes').get( function () {
+//     return this.post_likes.length})
 
 
 module.exports = mongoose.model('Post', postSchema)

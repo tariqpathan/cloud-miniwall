@@ -8,8 +8,10 @@ const verifyToken = require('../verifyToken')
 const {commentValidation} = require('../validations/validation')
 
 router.post('/:postId', verifyToken, async(req, res)=>{
-    const {error} = commentValidation(req.body)
-    if (error) {return res.status(400).send({message:error['details'][0]['message']})}
+    const {valError} = commentValidation(req.body)
+    if (valError) {
+        return res.status(400).send({message:valError['details'][0]['message']})
+    }
     
     try {
         const post = await Post.findById(req.params.postId)

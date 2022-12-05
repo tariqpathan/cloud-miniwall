@@ -1,12 +1,6 @@
 const mongoose = require('mongoose')
 
 const commentSchema = mongoose.Schema({
-    // removing since this will be nested in the post
-    // comment_parent:{
-    //     type:mongoose.Schema.Types.ObjectId, 
-    //     ref:"Post",
-    //     require:true,
-    // },
     comment_description:{
         type:String,
         require:true,

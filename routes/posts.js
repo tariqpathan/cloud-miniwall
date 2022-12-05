@@ -9,13 +9,13 @@ const verifyToken = require("../verifyToken")
 const {postValidation} = require("../validations/validation")
 
 router.post("/newpost", verifyToken, async(req, res)=>{
-    console.log("in the new post route")
-    const {error} = postValidation(req.body)
-    if (error) {return res.status(400).send({message:error})}
-    console.log("validation accepted")
+    const {valError} = postValidation(req.body)
+    if (valError) {
+        return res.status(400).send({message:valError['details'][0]['message']})
+    }
     const author = await User.findById(req.user._id)
     if (!author) {return res.status(400).send({message:"user not found"})}
-    console.log(author)
+    
     const postData = new Post({
         post_title:req.body.post_title,
         post_description:req.body.post_description,
@@ -23,15 +23,13 @@ router.post("/newpost", verifyToken, async(req, res)=>{
     })
     try {
         const savePost = await postData.save()
-        res.send({message:"success"})
+        res.redirect(`/api/post/${savePost._id}}`)
     }catch(err){
-        res.send({message:err})
+        res.send({error:err})
     }
 })
 
 router.get("/", verifyToken, async(req, res)=> {
-    // get by the most likes first and then chronological
-    // filter output to provide title, description, timestamp, author, no_likes
 
     try{
         
@@ -40,37 +38,38 @@ router.get("/", verifyToken, async(req, res)=> {
             post_description: 1,
             post_timestamp: 1,
             numLikes: {$size:"$post_likes"}
-        })
-        .populate({
+        }).populate({
             path: "post_author",
             model: "User",
             select: "-_id username",
-        })
-        .populate({
+        }).populate({
             path: "post_comments",
             model: "Comment",
             select: "-_id -__v comment_description comment_timestamp",
             populate: {
                 path: "comment_author",
                 model: "User",
-                select: "-_id:0 username"
+                select: "-_id username"
+            },
+            sort: {
+                post_timestamp: 1
             }
+        }).sort({
+            post_timestamp: 1,
+            numLikes: 1
         })
-        
-
-        
 
         res.send(posts)
+
     }catch(err){
-        res.status(400).send({message:err})
+        res.status(400).send({error:err})
     }
 })
 
 // route for a single post
 router.get('/:postId', verifyToken, async(req, res)=> {
     try{
-        
-        const posts = await Post.find({
+        const post = await Post.find({
             _id: req.params.postId
         }, 
         {
@@ -78,28 +77,27 @@ router.get('/:postId', verifyToken, async(req, res)=> {
             post_description: 1,
             post_timestamp: 1,
             numLikes: {$size:"$post_likes"}
-        })
-        .populate({
+        }).populate({
+            path: "post_author",
+            model: "User",
+            select: "-_id username",
+        }).populate({
             path: "post_comments",
             model: "Comment",
-            select: "-_id comment_description",
+            select: "-_id -__v comment_description comment_timestamp",
             populate: {
                 path: "comment_author",
                 model: "User",
                 select: "-_id username"
+            },
+            sort: {
+                post_timestamp: 1
             }
         })
-        .populate({
-            path: "post_author",
-            model: "User",
-            select: "-_id username",
-        })
+        res.send(post)
 
-        
-
-        res.send(["Congratulations!", posts])
     }catch(err){
-        res.status(400).send({message:err})
+        res.status(400).send({error:err})
     }
 })
 
