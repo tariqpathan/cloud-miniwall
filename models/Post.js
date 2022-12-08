@@ -3,7 +3,6 @@ const commentSchema = require('./Comment')
 const userSchema = require('./User')
 
 const postSchema = mongoose.Schema({
-    
     post_title:{
         type:String,
         require:true,
@@ -26,16 +25,15 @@ const postSchema = mongoose.Schema({
         require:true,
     },
     post_likes:{
-        type: [userSchema.schema]
+        type:[{
+            type:mongoose.Schema.Types.ObjectId,
+            ref: "User"
+        }]
     },
     post_comments:{
         type: [commentSchema.schema]
     }
 })
-
-// postSchema.virtual('numLikes').get( function () {
-//     return this.post_likes.length})
-
 
 module.exports = mongoose.model('Post', postSchema)
 

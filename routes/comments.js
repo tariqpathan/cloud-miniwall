@@ -19,7 +19,9 @@ router.post('/:postId', verifyToken, async(req, res)=>{
         // additional validations
         if (!post) {throw "post not found"}
         if (!author) {throw "author not found"}
-        if (author.equals(post.post_author)) {throw "author can't comment"}
+        if (author.equals(post.post_author)) {
+            throw "author can't comment"
+        }
         
         const commentData = new Comment({
             comment_description:req.body.comment_description,
@@ -29,13 +31,11 @@ router.post('/:postId', verifyToken, async(req, res)=>{
         await post.updateOne({
             $push: {post_comments:updatedComment}
         })
-        
         res.redirect(`/api/post/${req.params.postId}`)
         
     }catch(err){
         res.send({error:err})
     }
-
 })
 
 module.exports = router

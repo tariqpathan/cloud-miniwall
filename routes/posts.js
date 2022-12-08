@@ -1,7 +1,6 @@
 const express = require("express")
 const Post = require("../models/Post")
 const User = require("../models/User")
-const Comment = require("../models/Comment")
 const router = express.Router()
 const verifyToken = require("../verifyToken")
 
@@ -30,9 +29,7 @@ router.post("/newpost", verifyToken, async(req, res)=>{
 })
 
 router.get("/", verifyToken, async(req, res)=> {
-
     try{
-        
         const posts = await Post.find({}, {
             post_title: 1,
             post_description: 1,
@@ -58,7 +55,6 @@ router.get("/", verifyToken, async(req, res)=> {
             post_timestamp: 1,
             numLikes: 1
         })
-
         res.send(posts)
 
     }catch(err){
