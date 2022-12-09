@@ -17,7 +17,8 @@ router.post("/", verifyToken, async(req, res)=>{
         const postData = new Post({
             post_title:req.body.post_title,
             post_description:req.body.post_description,
-            post_author:author
+            post_author:author,
+            post_timestamp:Date.now() // added instead of using default
         })
     
         const savePost = await postData.save()
@@ -54,7 +55,7 @@ router.get("/", verifyToken, async(req, res)=> {
                 post_timestamp: 1
             }
         }).sort({
-            post_timestamp: 1,
+            post_timestamp: -1,
             numLikes: 1
         })
 

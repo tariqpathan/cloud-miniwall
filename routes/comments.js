@@ -22,7 +22,8 @@ router.post('/:postId', verifyToken, async(req, res)=>{
         
         const commentData = new Comment({
             comment_description:req.body.comment_description,
-            comment_author:author
+            comment_author:author,
+            comment_timestamp:Date.now()
         })
         const updatedComment = await commentData.save()
         await post.updateOne({
