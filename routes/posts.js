@@ -5,6 +5,10 @@ const router = express.Router()
 const verifyToken = require("../verifyToken")
 const {postValidation} = require("../validations/validation")
 
+// setting values for sort-orders to keep consistency
+const COMMENT_SORT = 1 // 1 = oldest-first
+const POST_SORT = -1 // -1 = newest-first
+
 router.post("/", verifyToken, async(req, res)=>{
     const {valError} = postValidation(req.body)
     if (valError) {
@@ -13,7 +17,6 @@ router.post("/", verifyToken, async(req, res)=>{
     try {
         const author = await User.findById(req.user._id)
         if (!author) {throw "author not found"}
-    
         const postData = new Post({
             post_title:req.body.post_title,
             post_description:req.body.post_description,
@@ -52,10 +55,10 @@ router.get("/", verifyToken, async(req, res)=> {
                 select: "-_id username"
             },
             sort: {
-                post_timestamp: 1
+                post_timestamp: COMMENT_SORT
             }
         }).sort({
-            post_timestamp: -1,
+            post_timestamp: POST_SORT,
             numLikes: 1
         })
 
@@ -91,7 +94,7 @@ router.get('/:postId', verifyToken, async(req, res)=> {
                 select: "-_id username"
             },
             sort: {
-                post_timestamp: 1
+                post_timestamp: COMMENT_SORT
             }
         })
         res.send(post)
@@ -128,10 +131,10 @@ router.get("/myposts", verifyToken, async(req, res)=> {
                 select: "-_id username"
             },
             sort: {
-                post_timestamp: 1
+                post_timestamp: COMMENT_SORT
             }
         }).sort({
-            post_timestamp: 1,
+            post_timestamp: POST_SORT,
             numLikes: 1
         })
 

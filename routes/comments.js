@@ -18,12 +18,12 @@ router.post('/:postId', verifyToken, async(req, res)=>{
         // additional validations
         if (!post) {throw "post not found"}
         if (!author) {throw "author not found"}
-        if (author.equals(post.post_author)) {throw "author can't comment"}
+        if (author.equals(post.post_author)) {throw "author can't comment on their posts"}
         
         const commentData = new Comment({
             comment_description:req.body.comment_description,
             comment_author:author,
-            comment_timestamp:Date.now()
+            comment_timestamp:Date.now() // default doesn't update immediately
         })
         const updatedComment = await commentData.save()
         await post.updateOne({
