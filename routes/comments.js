@@ -12,7 +12,6 @@ router.post('/:postId', verifyToken, async(req, res)=>{
     if (valError) {
         return res.status(400).send({message:valError['details'][0]['message']})
     }
-    
     try {
         const post = await Post.findById(req.params.postId)
         const author = await User.findById(req.user._id)
