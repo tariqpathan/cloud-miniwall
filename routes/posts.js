@@ -34,6 +34,57 @@ router.post("/", verifyToken, async(req, res)=>{
 // get all posts
 router.get("/", verifyToken, async(req, res)=> {
 
+    const condition = null // no match condition
+
+    const posts2 = await Post.aggregate([
+        {$match: {condition}},
+        {$addFields: {
+            numLikes: {$size: "$post_likes"},
+            "post_comments.commenter": "$comment_author.username"
+        }},
+        {
+            $lookup: {
+                from: "users",
+                localField: "post_author",
+                foreignField: "_id",
+                as: "post_author"
+            }
+        },
+        {$unwind: "$post_author"},
+        {
+            $lookup: {
+                from: "users",
+                localField: "post_comments.comment_author",
+                foreignField: "_id",
+                as: "post_comments.comment_author"
+            }
+        },
+        {
+            $project: {
+                _id: 1,
+                post_title: 1,
+                post_timestamp: 1,
+                numLikes: 1,
+                "post_author.username": 1,
+                // post_comments: 1,
+                "post_comments.comment_description":1,
+                "post_comments.comment_timestamp":1,
+                "post_comments.comment_author.username":1,
+                // "post_comments.commenter": 1
+                // "comment_author":"$comment_author.username"
+
+            }
+        }, 
+        {
+            $sort: {
+                numLikes: 1,
+                post_timestamp: -1
+            }
+        }
+    ])
+
+    // console.log(posts2)
+
     try{
         
         const posts = await Post.find({}, {
@@ -59,12 +110,12 @@ router.get("/", verifyToken, async(req, res)=> {
             }
         }).sort({
             post_timestamp: POST_SORT,
-            numLikes: 1
-        })
-
-        res.send(posts)
-
+            numLike: 1
+        }).exec()
+        
+        res.send(posts2)
     }catch(err){
+        console.log(err)
         res.status(400).send({error:err})
     }
 })
@@ -96,7 +147,7 @@ router.get('/:postId', verifyToken, async(req, res)=> {
             sort: {
                 post_timestamp: COMMENT_SORT
             }
-        })
+        }).exec()
         res.send(post)
 
     }catch(err){
@@ -134,9 +185,9 @@ router.get("/myposts", verifyToken, async(req, res)=> {
                 post_timestamp: COMMENT_SORT
             }
         }).sort({
-            post_timestamp: POST_SORT,
-            numLikes: 1
-        })
+            numLikes: 1,
+            post_timestamp: POST_SORT
+        }).exec()
 
         res.send(posts)
 
