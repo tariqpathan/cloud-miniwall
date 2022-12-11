@@ -6,7 +6,6 @@ const registerValidation = (data) => {
         username:joi.string().required().min(5).max(256),
         email:joi.string().required().min(6).max(256).email(),
         password:joi.string().required().min(6).max(1024),
-
     })
     return schemaValidation.validate(data)
 }
@@ -16,8 +15,8 @@ const loginValidation = (data) => {
         password:joi.string().required().min(6).max(1024)
     }).keys({
         // allows users to login via email or username
-        username: Joi.string().min(5),
-        email: Joi.string().min(6)
+        username: Joi.string().min(5).max(256),
+        email: Joi.string().min(6).max(256).email()
     }).or('username', 'email');
     return schemaValidation.validate(data)
 }

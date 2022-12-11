@@ -15,13 +15,11 @@ router.post('/register', async(req, res) => {
     if (valError) {
         return res.status(400).send({message:valError['details'][0]['message']})
     }
-
     const userExists = await User.findOne({
         $or: [{
             email:req.body.email}, 
             {username:req.body.username}
         ]})
-
     if (userExists) {
         return res.status(400).send({message:"user already exists"})
     }
@@ -48,7 +46,6 @@ router.post('/login', async(req, res)=>{
     if (valError) {
         return res.status(400).send({message:valError['details'][0]['message']})
     }
-
     const user = await User.findOne({
         $or: [{
             email:req.body.email},
