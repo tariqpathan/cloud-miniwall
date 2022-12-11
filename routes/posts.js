@@ -51,6 +51,7 @@ async function getPosts(condition={null:null}) {
                     post_description: 1,
                     post_timestamp: 1,
                     numLikes: 1,
+                    "post_author.username": 1,
                     post_comments: {
                         comment_description: 1,
                         comment_timestamp: 1}
