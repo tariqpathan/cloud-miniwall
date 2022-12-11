@@ -1,4 +1,5 @@
 const express = require("express")
+const mongoose = require("mongoose")
 const Post = require("../models/Post")
 const User = require("../models/User")
 const router = express.Router()
@@ -34,6 +35,7 @@ async function getPosts(condition={null:null}) {
             {$match: condition},
             {$addFields: {numLikes: {$size: "$post_likes"}}},
             {
+                // joins the author_id to the users table
                 $lookup: {
                     from: "users",
                     localField: "post_author",
@@ -41,16 +43,7 @@ async function getPosts(condition={null:null}) {
                     as: "post_author"
                 }
             },
-            {$unwind: "$post_author"},
-            // {
-            //     $lookup: {
-            //         from: "users",
-            //         let: {""},
-            //         // localField: "post_comments.comment_author",
-            //         // foreignField: "_id",
-            //         as: "post_comments.comment_author"
-            //     }
-            // },
+            {$unwind: "$post_author"}, // flattens the post_author field after join
             {
                 $project: {
                     _id: 1,
@@ -58,14 +51,17 @@ async function getPosts(condition={null:null}) {
                     post_description: 1,
                     post_timestamp: 1,
                     numLikes: 1,
-                }
-            }, 
+                    post_comments: {
+                        comment_description: 1,
+                        comment_timestamp: 1}
+                },
+            },
             {
                 $sort: {
                     numLikes: -1,
-                    post_timestamp: -1
+                    post_timestamp: -1, 
                 }
-            }
+            },
         ])
         return posts
     }catch(err){
@@ -85,9 +81,10 @@ router.get("/", verifyToken, async(req, res)=> {
 })
 
 // route for a single post
-router.get('/:postId', verifyToken, async(req, res)=> {
-    const condition = {_id:req.params.postId}
+router.get('/1/:postId', verifyToken, async(req, res)=> {
     try{
+        const postId = mongoose.Types.ObjectId(req.params.postId)
+        const condition = {"_id":postId}
         const posts = await getPosts(condition)
         res.send(posts)
     }catch(err){
@@ -95,10 +92,11 @@ router.get('/:postId', verifyToken, async(req, res)=> {
     }
 })
 
-// route to get a user's posts
-router.get("/myposts", verifyToken, async(req, res)=> {
-    const condition = {post_author:req.user._id}
+// route for a user's posts
+router.get('/myposts', verifyToken, async(req, res)=> {
     try{
+        const user = mongoose.Types.ObjectId(req.user._id)
+        const condition = {"post_author":user}
         const posts = await getPosts(condition)
         res.send(posts)
     }catch(err){
